@@ -10,10 +10,7 @@
 %     NOTES:  1.  The MRI data files must be in the subdirectory
 %             v3\DICOM\.
 %
-%             2.  T1rho_Test_Jiming_8July2020\ must be the current
-%             directory.
-%
-%             3.  Must have M-File exp_fun1.m in the current directory
+%             2.  Must have M-File exp_fun1.m in the current directory
 %             or path.
 %
 %     10-Jul-2020 * Mack Gardner-Morse
@@ -23,8 +20,8 @@
 %
 % Print Parameter
 %
-iprt = false;           % No printing of plots
-% iprt = true;            % Print plots
+% iprt = false;           % No printing of plots
+iprt = true;            % Print plots
 %
 % Nonlinear Least Squares Parameter
 %
