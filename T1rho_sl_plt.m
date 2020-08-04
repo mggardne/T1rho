@@ -282,7 +282,6 @@ for k = 1:nrsl
    else
      print('-dpsc2','-r600','-fillpage','-append',bnam);
    end
-
 %
    figure;
    orient landscape;
