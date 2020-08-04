@@ -301,7 +301,7 @@ end
 %
 % Save Masks, ROIS and Slice Information into MAT File
 %
-save(mnam,'bc','bones','ibone','irsl','maskb','maskf','maskp', ...
-     'maskt','nrfiles','rois','rsl','-append');
+save(mnam,'bc','bones','f','ibone','irsl','maskb','maskf','maskp', ...
+     'maskt','nrfiles','p','rois','rsl','t','-append');
 %
 return
