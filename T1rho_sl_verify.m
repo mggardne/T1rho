@@ -1,18 +1,35 @@
+%#######################################################################
 %
-% Plots ROIs on T1rho Slices Before and After Digitized Slice to
-% Verify Correct Slice
+%                    * T1rho SLice VERIFY Program *
 %
-% Note:  Run after running main plotting program T1rho_sl_plt.m or
-% loading T1rho MAT file.
+%          M-File which plots ROIs on T1rho slices before and after the
+%      digitized slice to verify the use of the correct slice.
 %
-% Result:  Visually looks like correct slices were used to generate
-% masks.
+%     NOTES:  1.  Run after running main plotting program
+%            T1rho_sl_plt.m or loading T1rho MAT file.
 %
-% 04-Aug-2020 * Mack Gardner-Morse
+%     RESULTS:  1.  Visually looks like the correct slices were used to
+%               generate masks.
+%
+%     04-Aug-2020 * Mack Gardner-Morse
 %
 
+%#######################################################################
+%
+% Get Series Description and ROI Names For Legend Entries
+%
+fs = series_desc{idx};
+fs = fs(8:end);         % Short series description w/o '3DMAPPS'
+fs = strtrim(fs);       % File name description
+%
+rnams = {rois.name}';   % Get names of ROIs
+legds = strrep(rnams,'.csv','');       % Create legend entries
 %
 % Loop through ROI Slices and Plot ROIs
+%
+lt = ['b.-'; 'g.-'; 'r.-'; 'c.-'; 'm.-'; 'y.-' ];  % Line color and type
+%
+nrsl = size(rsl,1);     % Number of slices with ROIs
 %
 for k = 1:nrsl
 %
@@ -21,14 +38,14 @@ for k = 1:nrsl
    slk = rsl(k);        % Slice number in spin lock images
    sl = irsl(k);        % Slice number in T1rho images
 %
-   for m = -1:1         % Check one slice before and after original slice
+   for n = -1:1         % Check one slice before and after original slice
    figure;
    orient landscape;
-   imagesc(T1rhonls(:,:,sl+m),[0 100]);
+   imagesc(T1rhonls(:,:,sl+n),[0 100]);
    colormap gray;
    axis image;
    axis off;
-   title([fs ' T1rho Slice ' int2str(sl+m)],'FontSize',16, ...
+   title([fs ' T1rho Slice ' int2str(sl+n)],'FontSize',16, ...
          'FontWeight','bold');
    hold on;
 %
@@ -41,18 +58,6 @@ for k = 1:nrsl
       idxr = rois(l).slice==slk;
       if any(idxr)
         dat = cell2mat(rois(l).roi(idxr).data);
-        b = bones(l);
-        m = double(strcmpi(bc(l),'B'))+1;
-        if strcmpi(b,'F')
-          f{m,k} = dat; % Femur
-          ibone(k,1) = true;
-        elseif strcmpi(b,'P')
-          p{m,k} = dat; % Patella
-          ibone(k,2) = true;
-        else
-          t{m,k} = dat; % Tibia
-          ibone(k,3) = true;
-        end
         lh(l) = plot(dat(:,1),dat(:,2),lt(l,:));
         idl(l) = true;
       end
@@ -61,5 +66,7 @@ for k = 1:nrsl
 % Add Legends and Print Slice Plots
 %
    legend(lh(idl),legds(idl));
-   end                  % End of m loop - 1 slice before through 1 slice after
+   end                  % End of n loop - 1 slice before through 1 slice after
 end
+%
+return
