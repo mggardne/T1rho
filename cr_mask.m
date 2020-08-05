@@ -51,7 +51,6 @@ end
 %
 tri = mk_tri4_2dc(roic);
 xy = cell2mat(roic);
-npt = size(xy,1);
 %
 % Find Pixels within the Region of Interest
 %
