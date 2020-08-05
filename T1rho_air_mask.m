@@ -6,11 +6,8 @@
 %      with ROIs and plots the ROIs.  The air mask is saved to the
 %      MAT file.
 %
-%     NOTES:  1.  Run after running main plotting program
-%            T1rho_sl_plt.m or loading T1rho MAT file.
-%
-%     RESULTS:  1.  Visually looks like the correct slices were used to
-%               generate masks.
+%     NOTES:  1.  M-files in_tri2d.m and tri_mask.m must be in the
+%                 current directory or path.
 %
 %     04-Aug-2020 * Mack Gardner-Morse
 %
