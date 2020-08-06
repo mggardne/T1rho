@@ -122,7 +122,6 @@ for k = 1:nrsl
          'FontWeight','bold');
 %
    print('-dpsc2','-r600','-fillpage','-append',cnam);
-
 %
 end
 %
