@@ -29,6 +29,8 @@ legds = strrep(rnams,'.csv','');       % Create legend entries
 %
 lt = ['b.-'; 'g.-'; 'r.-'; 'c.-'; 'm.-'; 'y.-' ];  % Line color and type
 %
+vnam = [fs 'ROI_sl_verify.ps'];        % Verify print file name
+%
 nrsl = size(rsl,1);     % Number of slices with ROIs
 %
 for k = 1:nrsl
@@ -66,6 +68,12 @@ for k = 1:nrsl
 % Add Legends and Print Slice Plots
 %
       legend(lh(idl),legds(idl));
+%
+      if n==-1&&k==1
+        print('-dpsc2','-r600','-fillpage',vnam);
+      else
+        print('-dpsc2','-r600','-fillpage','-append',vnam);
+      end
 %
    end                  % End of n loop - 1 slice before through 1 slice after
 end                     % End of k loop - ROI slices loop
