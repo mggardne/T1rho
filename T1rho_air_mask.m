@@ -7,7 +7,7 @@
 %      MAT file.
 %
 %     NOTES:  1.  M-files in_tri2d.m and tri_mask.m must be in the
-%                 current directory or path.
+%             current directory or path.
 %
 %     04-Aug-2020 * Mack Gardner-Morse
 %

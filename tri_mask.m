@@ -2,8 +2,7 @@ function mask = tri_mask(pts,npx)
 %TRI_MASK  Creates an image mask based on the two-dimensional (2-D)
 %          coordinates of three points which form a triangle.  The
 %          region of interest (ROI) is defined as the space within the
-%          triangle
-%          line.
+%          triangle.
 %
 %          MASK = TRI_MASK(PTS,NPX) given the two-dimensional
 %          coordinates of three points defining a triangular region of

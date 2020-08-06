@@ -39,34 +39,35 @@ for k = 1:nrsl
    sl = irsl(k);        % Slice number in T1rho images
 %
    for n = -1:1         % Check one slice before and after original slice
-   figure;
-   orient landscape;
-   imagesc(T1rhonls(:,:,sl+n),[0 100]);
-   colormap gray;
-   axis image;
-   axis off;
-   title([fs ' T1rho Slice ' int2str(sl+n)],'FontSize',16, ...
-         'FontWeight','bold');
-   hold on;
+      figure;
+      orient landscape;
+      imagesc(T1rhonls(:,:,sl+n),[0 100]);
+      colormap gray;
+      axis image;
+      axis off;
+      title([fs ' T1rho Slice ' int2str(sl+n)],'FontSize',16, ...
+            'FontWeight','bold');
+      hold on;
 %
-   lh = gobjects(nrfiles,1);           % Line graphic handles
-   idl = false(nrfiles,1);
+      lh = gobjects(nrfiles,1);        % Line graphic handles
+      idl = false(nrfiles,1);
 %
 % Get ROI Data for this Slice and Plot ROIs
 %
-   for l = 1:nrfiles
-      idxr = rois(l).slice==slk;
-      if any(idxr)
-        dat = cell2mat(rois(l).roi(idxr).data);
-        lh(l) = plot(dat(:,1),dat(:,2),lt(l,:));
-        idl(l) = true;
+      for l = 1:nrfiles
+         idxr = rois(l).slice==slk;
+         if any(idxr)
+           dat = cell2mat(rois(l).roi(idxr).data);
+           lh(l) = plot(dat(:,1),dat(:,2),lt(l,:));
+           idl(l) = true;
+         end
       end
-   end
 %
 % Add Legends and Print Slice Plots
 %
-   legend(lh(idl),legds(idl));
+      legend(lh(idl),legds(idl));
+%
    end                  % End of n loop - 1 slice before through 1 slice after
-end
+end                     % End of k loop - ROI slices loop
 %
 return
