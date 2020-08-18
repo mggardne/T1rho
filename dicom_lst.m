@@ -104,51 +104,55 @@ for k = 1:nseries
 %
    fnam = afiles{l}{1};
    fnam = fullfile(ddir,fnam);
-   info = dicominfo(fnam);
+   if exist(fnam,'file')
+     info = dicominfo(fnam);
 %
-   if isfield(info,'AcquisitionDuration')
-     adur(k) = info.AcquisitionDuration;
-     adurs{k} = char(duration(seconds(adur(k)),'Format','mm:ss'));
-   else
-     adurs{k} = '00:00';
+     if isfield(info,'AcquisitionDuration')
+       adur(k) = info.AcquisitionDuration;
+       adurs{k} = char(duration(seconds(adur(k)),'Format','mm:ss'));
+     else
+       adurs{k} = '00:00';
+     end
+     if isfield(info,'Rows')
+       psz(k,:) = [info.Rows info.Columns];
+       isz(k,:) = [info.Width info.Height];
+     end
+     if isfield(info,'SliceThickness')
+       sthk(k) = info.SliceThickness;
+       pspc(k,:) = info.PixelSpacing';
+       sspc(k) = info.SpacingBetweenSlices;
+     end
+     if isfield(info,'ImagePositionPatient')
+       pos(k,:) = info.ImagePositionPatient';
+     end
+     if isfield(info,'RescaleSlope')
+       sl(k) = info.RescaleSlope;
+       rinterc(k) = info.RescaleIntercept;
+     end
+     ptxt{k} = info.ProtocolName;
+     stxt{k} = info.SeriesDescription;
+     sn(k) = info.SeriesNumber;
+     if isfield(info,'TriggerTime');
+       splt(k) = info.TriggerTime;
+     end
+     dat = info.SeriesDate;
+     tim = info.SeriesTime;
+     sdat(k) = datetime([dat tim],'InputFormat','yyyyMMddHHmmss.SSSSS');
    end
-   if isfield(info,'Rows')
-     psz(k,:) = [info.Rows info.Columns];
-     isz(k,:) = [info.Width info.Height];
-   end
-   if isfield(info,'SliceThickness')
-     sthk(k) = info.SliceThickness;
-     pspc(k,:) = info.PixelSpacing';
-     sspc(k) = info.SpacingBetweenSlices;
-   end
-   if isfield(info,'ImagePositionPatient')
-     pos(k,:) = info.ImagePositionPatient';
-   end
-   if isfield(info,'RescaleSlope')
-     sl(k) = info.RescaleSlope;
-     rinterc(k) = info.RescaleIntercept;
-   end
-   ptxt{k} = info.ProtocolName;
-   stxt{k} = info.SeriesDescription;
-   sn(k) = info.SeriesNumber;
-   if isfield(info,'TriggerTime');
-     splt(k) = info.TriggerTime;
-   end
-   dat = info.SeriesDate;
-   tim = info.SeriesTime;
-   sdat(k) = datetime([dat tim],'InputFormat', 'yyyyMMddHHmmss.SSSSS');
 %
 end
 %
 % Get Spin Lock Times from Series Description
 %
 idv = contains(stxt,'TSL_');
-splckt = extractBetween(stxt(idv),'TSL_','ms');  % Spin lock times as text
-%
-splckt = strrep(splckt,'_',',');
 %
 splcktc = cellstr(repmat('None',nseries,1));     % Cell array for all series
-splcktc(idv) = splckt;
+%
+if any(idv)
+  splckt = extractBetween(stxt(idv),'TSL_','ms');     % Spin lock times as text
+  splckt = strrep(splckt,'_',',');
+  splcktc(idv) = splckt;
+end
 %
 % Put Series Data into a Table and Get Column Names
 %
