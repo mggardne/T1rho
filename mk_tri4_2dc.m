@@ -108,8 +108,9 @@ for k = 2:nslice
    slx(k-1) = norm(ds)-norm(offst);
 %
 % Ends of Top (Cartilage) Line
-%
-   mp = -de(:,1)./de(:,2);
+%    mp = -de(:,1)./de(:,2);             % 90 degrees
+   mp(2,1) = (de(2,1)+de(2,2))./(de(2,1)-de(2,2));    % 45 degrees
+   mp(1,1) = (de(1,2)-de(1,1))./(de(1,1)+de(1,2));    % 45 degrees
    xp = dat{k-1}([1;npts(k-1)],1);
    yp = dat{k-1}([1;npts(k-1)],2);
    bp = yp-mp.*xp;
@@ -143,7 +144,7 @@ for k = 2:nslice
    nid = n(k-1)+1:n(k+1);
    tri = [tri; nid(tril)];
    if iplt
-     figure;
+     h1 = figure;
      orient tall;
      ntril = size(tril,1);
      cla;
@@ -153,7 +154,41 @@ for k = 2:nslice
      text(xt,yt,int2str((1:length(xt))'),'Color','b','FontSize',12);
      text(mean(xt(tril),2),mean(yt(tril),2),int2str((1:ntril)'), ...
           'Color','r','FontSize',12);
+     h2 = figure;
+     orient tall;
+     nt = size(tri,1);
+     cla;
+     plot(xy(:,1),xy(:,2),'k.-');
+     hold on;
+     xyc = dat{k-1};
+     plot(xyc(:,1),xyc(:,2),'r.-');
+     xycp = [xyc(1,:); xyc(1,:)-de(1,:)];
+     plot(xycp(:,1),xycp(:,2),'r:');
+     xycp = [xyc(end,:); xyc(end,:)+de(2,:)];
+     plot(xycp(:,1),xycp(:,2),'r:');
+     xy1 = [xyc; dat{k}];
+     xx = xy1(:,1);
+     yy = xy1(:,2);
+     xa = [min(xx)-2; max(xx)+2];
+     yw = [min(yy)-2 max(yy)+2];
+     ya = mp(1)*xa+bp(1);
+     plot(xa,ya,'g-','Color',[0 0.7 0]);
+     ya = mp(2)*xa+bp(2);
+     plot(xa,ya,'g-','Color',[0 0.7 0]);
+     xp = reshape(xy1(tri,1),nt,3)';
+     yp = reshape(xy1(tri,2),nt,3)';
+     xp = repmat(mean(xp),3,1)+0.75*(xp-repmat(mean(xp),3,1));
+     yp = repmat(mean(yp),3,1)+0.75*(yp-repmat(mean(yp),3,1));
+     patch(xp,yp,[0.0638 0.7446 0.7292]);
+     text(xx,yy,int2str((1:length(xx))'),'Color','k', ...
+          'FontSize',12);
+     text(mean(xx(tril),2),mean(yy(tril),2),int2str((1:nt)'), ...
+          'Color','b','FontSize',12);
+     axlim = axis;
+     axis equal;
+     axis([axlim(1:2) yw]);
      pause;
+     close(h1,h2);
    end
 %
 end

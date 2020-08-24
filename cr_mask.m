@@ -17,7 +17,7 @@ function mask = cr_mask(roic,npx)
 %          MASK.  Note:  If NPX has only one element, the image is
 %          assumed to be square (symmetrical) (NPX by NPX).
 %
-%          NOTES:  1.  M-files in_tri2d.m, lsect2.m, mk_tri4_2dc must
+%          NOTES:  1.  M-files in_tri2d.m, lsect2.m, mk_tri4_2dc.m must
 %                  be in the current directory or path.
 %
 %          03-Aug-2020 * Mack Gardner-Morse
@@ -47,7 +47,7 @@ if ndim==1
   npx = [npx; npx];
 end
 %
-% Create Triange Meshes for the Region of Interest
+% Create Triangle Meshes for the Region of Interest
 %
 tri = mk_tri4_2dc(roic);
 xy = cell2mat(roic);
@@ -57,6 +57,9 @@ xy = cell2mat(roic);
 mask = false(npx(1)*npx(2),1);
 %
 minr = floor(min(xy));
+if any(minr(:)==0)      % Trap for zeros
+  minr(minr(:)==0) = 1;
+end
 maxr = ceil(max(xy));
 idx = minr(:,1):maxr(:,1);
 idy = minr(:,2):maxr(:,2);

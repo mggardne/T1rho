@@ -1,6 +1,7 @@
 function [xcoord,ycoord,idx] = lsect2(m1,b1,pll)
 %LSECT2  Finds the first intersection of a line with a piecewise linear
 %        line in a 2-D plane.
+%
 %        [XCOORD,YCOORD] = LSECT2(M1,B1,PLL) finds the intersection of
 %        a line defined by a slope (M1) and intercept (B1) with a
 %        piecewise linear line (PLL).  PLL is defined by a series of
