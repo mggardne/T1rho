@@ -13,8 +13,9 @@
 %     (0<T1rho<100) are output to a MS-Excel spreadsheet.
 %
 %     NOTES:  1.  The T1rho MAT files must be in the current directory.
-%             MAT file dicom_lst.mat must be in the current directory.
-%             See dicom_lst.m.
+%             The current directory must contain the date "8July2020" or
+%             "08Aug2020" in the directory name.  MAT file dicom_lst.mat
+%             must be in the current directory.  See dicom_lst.m.
 %
 %             2.  M-files cr_mask2.m, in_tri2d.m, lsect2.m, lsect2a.m,
 %             lsect3.m, lsect4.m, lsect5.m, meshbnd3.m, midline.m,
@@ -22,7 +23,9 @@
 %             current directory or path.
 %
 %             3.  ROI CSV files must be in subdirectories under the
-%             directory "\August T1 Segmentations".
+%             directory "JULYT1Rho" or "\August T1 Segmentations".  Note
+%             that the ROIs in "\August T1 Segmentations" must be
+%             corrected based on the new digitizations in "Aug T1 Rho".
 %
 %     19-Aug-2020 * Mack Gardner-Morse
 %
@@ -32,42 +35,79 @@
 %     24-Aug-2020 * Mack Gardner-Morse * Added output of T1rho measures
 %                                        to MS-Excel spreadsheet.
 %
+%     25-Aug-2020 * Mack Gardner-Morse * Works for both MRI scan
+%                                        directories based on date.
+%
 
 %#######################################################################
 %
+% Get Current Directory Date
+%
+paths = split(pwd,filesep);
+pdate = split(paths{end},'_');         % Path date is one of the splits
+idd = contains(pdate,{'July';'Aug'});
+pdate = pdate{idd};     % Path date
+%
 % Pick MRI Series to Analyze
 %
-mnams = dir('T1rho*.mat');
+mnams = dir('T1rho_*.mat');
 mnams = {mnams.name}';
 %
 idm = menu('Pick a MAT File to Analyze',mnams);
 mnam = mnams{idm};
 %
-% Load T1rho Data
+if strcmp(pdate,'8July2020')
 %
-load(mnam,'fs','npx','nslt','sn','sn1','T1rhonls');
+% Load T1rho Data and Get Directory with ROIs
+%
+  load(mnam,'npx','nslt','series_desc','T1rhonls');
+%
+  fs = extractAfter(mnam,'_');
+  fs = fs(1:end-4);
+%  
+  rdir = fullfile('JULYT1Rho',fs);
+%
+  ids = contains(series_desc,fs);
+  idx = find(ids)+1;
+%
+elseif strcmp(pdate,'06Aug2020')
+%
+% Load T1rho Data and Get Directory with ROIs
+%
+  load(mnam,'fs','npx','nslt','sn','sn1','T1rhonls');
+%
+  rdir = 'August T1 Segmentations';
+  rsdirs = dir(rdir);
+  idd = [rsdirs.isdir]';
+  rsdirs = {rsdirs(idd).name}';
+%
+  idd = startsWith(rsdirs,'.');        % Current and parent directories
+  rsdirs = rsdirs(~idd);     % Don't use current and parent directories
+%
+  idr = menu('Pick Corresponding ROI Series Directory to Analyze', ...
+             rsdirs);
+  rsdir = rsdirs{idr};
+  rdir = fullfile(rdir,rsdir);
+%
+  idx = sn==sn1;
+%
+else
+  error(' *** ERROR in T1rho_sl_plt2:  Scan date not recognized!');
+end
+%
+% Get Pixel Spacing, Series Number and Analysis Parameters
+%
+load('dicom_lst.mat','pspc','sn');
+scal = pspc(idx,:);
+%
+sn1 = sn(idx);
+%
+fs = ['S' int2str(sn1)];               % Use series number as identifier
+%
+dist = 7.5;             % Maximum distance to midline
 nsl = size(T1rhonls,3); % Number of slices
 %
-% Get Pixel Spacing
-%
-load('dicom_lst.mat','pspc');
-idx = sn==sn1;
-scal = pspc(idx,:);
-dist = 7.5;             % Maximum distance to midline
-%
 % Get ROIs
-%
-rdir = 'August T1 Segmentations';
-rsdirs = dir(rdir);
-idd = [rsdirs.isdir]';
-rsdirs = {rsdirs(idd).name}';
-%
-idd = startsWith(rsdirs,'.');          % Current and parent directories
-rsdirs = rsdirs(~idd);  % Don't use current and parent directories
-%
-idr = menu('Pick Corresponding ROI Series Directory to Analyze',rsdirs);
-rsdir = rsdirs{idr};
-rdir = fullfile(rdir,rsdir);
 %
 rnams = dir(fullfile(rdir,'*.csv'));
 rnams = {rnams.name}';
@@ -194,7 +234,7 @@ for k = 1:nrsl
    colormap gray;
    axis image;
    axis off;
-   title([fs ' T1rho Slice ' int2str(sl)],'FontSize',16, ...
+   title({[fs ' T1rho Slice ' int2str(sl)]; pdate},'FontSize',16, ...
          'FontWeight','bold');
    hold on;
 %
@@ -283,7 +323,7 @@ for k = 1:nrsl
    colormap(cmap);
    axis image;
    axis off;
-   title([fs ' T1rho Slice ' int2str(sl)],'FontSize',16, ...
+   title({[fs ' T1rho Slice ' int2str(sl)]; pdate},'FontSize',16, ...
          'FontWeight','bold');
    hb = colorbar;
    set(hb,'Limits',[10 70]);
@@ -379,7 +419,7 @@ for k = 1:nrsl
    colormap gray;
    axis image;
    axis off;
-   title([fs ' T1rho Slice ' int2str(sl)],'FontSize',16, ...
+   title({[fs ' T1rho Slice ' int2str(sl)]; pdate},'FontSize',16, ...
          'FontWeight','bold');
    hold on;
    plot(xyb(o,1),xyb(o,2),'r.-');
@@ -398,7 +438,7 @@ for k = 1:nrsl
    colormap(bmap);
    axis image;
    axis off;
-   title([fs ' T1rho Slice ' int2str(sl)],'FontSize',16, ...
+   title({[fs ' T1rho Slice ' int2str(sl)]; pdate},'FontSize',16, ...
          'FontWeight','bold');
 %
    print('-dpsc2','-r600','-fillpage','-append',bnam);
@@ -487,6 +527,20 @@ for l = 1:2
    end
 end
 %
+% Combine Bone Data and Layer Data
+%
+dall{1,1} = cell2mat(data(1,:)');      % Layer 1 (superficial)
+dall{2,1} = cell2mat(data(2,:)');      % Layer 2 (deep)
+dall{3,1} = [dall{1}; dall{2}];        % Combine both layers
+%
+for k = 3:-1:1
+   da = dall{k};
+   nall(k,1) = size(da,1);
+   mnall(k,1) = mean(da);
+   sdall(k,1) = std(da);
+   snrall(k,1) = mnall(k)./sdall(k);
+end
+%
 % Construct Output Table for T1rho Measures on Each Slice
 %
 bones2 = repmat({'Femur' 'Patella' 'Tibia' 'All'},2,1);
@@ -519,7 +573,7 @@ varnams = {'Slice#','Bone','Layer','N','Mean','SD','SNR'};
 tab1 = table(slnums,bones2,lays2,nums,T1rho_mn,T1rho_sd,T1rho_snr, ...
            'VariableNames',varnams);
 %
-% Construct Output Table for T1rho Measures Over all ROI Slices
+% Construct Output Table for T1rho Measures Over All ROI Slices
 %
 slnuma = cellstr(repmat('All',6,1));
 laya = repmat(lays,3,1);
@@ -531,15 +585,24 @@ snra = snra(:);
 %
 tab2 = table(slnuma,bonesa,laya,na,mna,sda,snra,'VariableNames',varnams);
 %
+% Construct Output Table for T1rho Measures Over All Bones and Layers
+%
+slnumall = cellstr(repmat('All',3,1));
+bonesall(:,1) = slnumall;
+layall = {lays{1}; lays{2}; 'All'};
+%
+tab3 = table(slnumall,bonesall,layall,nall,mnall,sdall,snrall, ...
+             'VariableNames',varnams);
+%
 % Combine Output Tables with T1rho Measures and Write to MS-Excel File
 %
-tab = [tab1; tab2];
+tab = [tab1; tab2; tab3];
 %
 writetable(tab,xnam);
 %
 % Save Masks, ROIS and Slice Information into MAT File
 %
 save(mnam,'bc','bones','f','ibone','irsl','maskb','maskf','maskp', ...
-     'maskt','nrfiles','p','rois','rsl','t','tab','-append');
+     'maskt','nrfiles','p','pdate','rois','rsl','t','tab','-append');
 %
 return
