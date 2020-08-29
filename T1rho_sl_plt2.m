@@ -210,9 +210,10 @@ maskt = false(npx*npx,2,nrsl);         % Mask for tibial cartilage
 %
 maskb = false(npx*npx,nrsl);           % Mask for femoral condyle bone
 %
-% MS-Excel File
+% Initialize Arrays for Loop 
 %
-xnam = ['T1rho_sl_' fs '.xlsx'];
+binedg = 0:4:100;       % Bin edges for histograms
+xnam = ['T1rho_sl_' fs '.xlsx'];       % MS-Excel File
 datas = cell(2,3,nrsl); % Data for all slices:  2 = layers and 3 = bones
 slnums = zeros(2,4,nrsl);
 bone_idx = zeros(2,4,nrsl);
@@ -354,7 +355,7 @@ for k = 1:nrsl
    htxt = {htxt1; htxt2; htxt3; htxt4};
 %
    subplot(2,1,1);
-   histogram(hdat1,25,'FaceAlpha',1,'FaceColor',[0 0 0.8]);
+   histogram(hdat1,binedg,'FaceAlpha',1,'FaceColor',[0 0 0.8]);
    axlim = axis;
    text(75,axlim(4)/2,htxt,'FontSize',11,'FontWeight','bold');
    xlabel('T1rho Values (ms)','FontSize',12,'FontWeight','bold');
@@ -377,7 +378,7 @@ for k = 1:nrsl
    htxt = {htxt1; htxt2; htxt3; htxt4};
 %
    subplot(2,1,2);
-   histogram(hdat2,25,'FaceAlpha',1,'FaceColor',[0 0 0.8]);
+   histogram(hdat2,binedg,'FaceAlpha',1,'FaceColor',[0 0 0.8]);
    axlim = axis;
    text(75,axlim(4)/2,htxt,'FontSize',11,'FontWeight','bold');
    xlabel('T1rho Values (ms)','FontSize',12,'FontWeight','bold');
