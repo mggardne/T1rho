@@ -33,7 +33,11 @@ function [idnn,idv] = get_nn_idx(idele,npx,ichk)
 %                  gets linear index to surrounding pixels instead of a
 %                  matrix of ones.
 %
-%                  3.  Future version may extend this function to 2D
+%                  3.  Means and standard deviations of the nearest
+%                  neighbors can be calculated using stat_nan.m.  See
+%                  stat_nan.m.
+%
+%                  4.  Future version may extend this function to 2D
 %                  rectangular matrices.
 %
 %          10-Sep-2020 * Mack Gardner-Morse
