@@ -15,7 +15,7 @@
 %             written to a MS-Excel spreadsheet and to a Matlab MAT
 %             file.  The spreadsheet and MAT file are written in the
 %             same directory as the DICOMDIR file.  The MAT file
-%             contains additonal variables and all the file names in
+%             contains additional variables and all the file names in
 %             each series and patient position in MRI coordinates.
 %
 %             4.  The program traps for some, but not all parameters in
@@ -37,7 +37,6 @@ if exist(ddirfile,'file')
 %
 % Get File Names and Acquired Pixel Spacing
 %
-  ifile = true;
   d0 = images.dicom.parseDICOMDIR(ddirfile);
   ns = size(d0.Patients.Studies.Series,2);
 %
@@ -132,7 +131,7 @@ for k = 1:nseries
      ptxt{k} = info.ProtocolName;
      stxt{k} = info.SeriesDescription;
      sn(k) = info.SeriesNumber;
-     if isfield(info,'TriggerTime');
+     if isfield(info,'TriggerTime')
        splt(k) = info.TriggerTime;
      end
      dat = info.SeriesDate;
@@ -178,7 +177,7 @@ writetable(t0,xlsnam);
 %
 % Save MAT File
 %
-clear d0 dat ifile info k l n tim;
+clear d0 dat info k l n tim;
 matnam = fullfile(ddir,'dicom_lst.mat');
 save(matnam);
 %
