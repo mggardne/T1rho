@@ -1,4 +1,4 @@
-function [rmean,sd] = stat_nan(data,idnn,idv)
+function [rmean,sd,n] = stat_nan(data,idnn,idv)
 %STAT_NAN  Given a data matrix, a linear index matrix to the nine (9)
 %          nearest neighbors and a logical matrix to the valid indices
 %          in the index matrix, returns the means and optional standard
@@ -11,10 +11,14 @@ function [rmean,sd] = stat_nan(data,idnn,idv)
 %          matrix, IDV, returns the means, RMEAN, of the data matrix,
 %          DATA, as indexed by the columns of the linear index matrix,
 %          IDNN.
-%          
+%
 %          [RMEAN,SD] = STAT_NAN(DATA,IDNN,IDV) returns the sample
 %          standard deviations, SD, of the data matrix, DATA, as
 %          indexed by the columns of the linear index matrix, IDNN.
+%
+%          [RMEAN,SD,N] = STAT_NAN(DATA,IDNN,IDV) returns the number of
+%          observations, N, of the data matrix, DATA, as indexed by the
+%          columns of the linear index matrix, IDNN.
 %
 %          NOTES:  1.  For two-dimensional (2D) matrices.
 %
@@ -44,7 +48,8 @@ idnn(~idv) = 1;
 %
 dat = data(idnn);
 dat = dat.*idv;         % Set NaN indices to zeros
-rmean = sum(dat)./sum(idv);
+n = sum(idv);           % N
+rmean = sum(dat)./n;
 %
 % Calculate the Standard Deviations
 %
@@ -53,7 +58,7 @@ if nargout>1
   dat = dat-rmat;
   dat = dat.*idv;       % Set NaN indices to zeros
   dat = sum(dat.*dat);  % Sum of squares
-  sd = sqrt(dat./(sum(idv)-1));        % Sample SD
+  sd = sqrt(dat./(n-1));               % Sample SD
 end
 %
 return
